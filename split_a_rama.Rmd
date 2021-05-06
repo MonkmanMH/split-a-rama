@@ -10,6 +10,7 @@ output: html_document
 library(tidyverse)
 ```
 
+## Test
 
 Some messy data--note that the 2nd row has an explicit missing Sales value in the middle and the end (there is a comma at the end of the string), and the 3rd row has an implicit missing Sales value at the end.
 
@@ -70,6 +71,7 @@ df %>%
 
 ```
 
+### Manual approach
 
 Got it! split the columns into separate objects, then use `data.frame()` to join them by position, then `rbind()`
 
@@ -105,7 +107,7 @@ bind_rows(df_a, df_b)
 
 ```
 
-## Turn it into a function
+### Turn it into a function
 
 data.frame as output object doesn't work
 
@@ -126,9 +128,10 @@ for(i in nrow(df)) {
 
 ```
 
-Assign object as list with a nested data frame?
+Assign object as list with a nested data frame
 
-This assigns the 2nd row to the 2nd item in the "temp_list" but where is row #1?
+(thanks Julie!)
+
 
 ```{r}
 
@@ -138,12 +141,47 @@ sales <- str_split(df$Sales, ",")
 temp_list <- vector("list", length(city_names))
 
 
-for(i in length(city_names)) {
+for(i in seq_along(city_names)) {
   temp_list[[i]] <- tibble(city_names[[i]], sales[[i]])
 }
 
-
+bind_rows(temp_list)
 
 ```
 
+
+
+
+## Sample data
+
+```{r}
+sample_data <- read_csv("sample.csv")
+
+sample_data
+```
+
+```{r}
+author_names <- str_split(sample_data$AU, ";")
+institution <- str_split(sample_data$INST, ";")
+
+length(institution)
+
+institution2 <- vector("list", length = length(institution))
+
+for (i in seq_along(institution)) {
+  if (length(author_names[[i]] > length(institution[[i]]))) {
+    institution2[[i]] <- c(institution[[i]], "NA")
+  }
+  }
+
+df_a <- tibble(author_names[[1]], institution[[1]])
+colnames(df_a) <- c("author_names", "institution") 
+  
+
+df_b <- tibble(author_names[[2]], institution[[2]])
+colnames(df_b) <- c("author_names", "institution") 
+
+bind_rows(df_a, df_b)
+
+```
 
