@@ -163,13 +163,17 @@ sample_data
 ```{r}
 author_names <- str_split(sample_data$AU, ";")
 institution <- str_split(sample_data$INST, ";")
+doi_nums <- sample_data$DOI
 
 length(author_names)
 length(institution)
+length(doi_nums)
 
 ```
 
 
+
+Add one NA to institution list that's too short
 
 ```{r}
 
@@ -196,6 +200,39 @@ for (i in seq_along(institution)) {
 ```
 
 
+Add multiple NAs to a list that's too short
+
+```{r}
+
+institution2 <- vector("list", length(author_names))
+
+for (i in seq_along(institution)) {
+
+  if (length(author_names[[i]]) > length(institution[[i]])) {
+      institution2[[i]] <- c(institution[[i]], NA)
+    while (length(author_names[[i]]) > length(institution2[[i]])) {
+      institution2[[i]] <- c(institution2[[i]], NA)
+      }
+    } else {
+      institution2[[i]] <- institution[[i]]
+  }
+  
+  print(c(
+  i, 
+  length(author_names[[i]]), 
+  length(institution[[i]]), 
+  length(institution2[[i]])
+  ))
+  
+}
+
+```
+
+
+bind lists into single object
+
+note that the DOI number gets added back in
+
 ```{r}
 
 # define object
@@ -203,11 +240,15 @@ temp_list <- vector("list", length(author_names))
 
 
 for(i in seq_along(author_names)) {
-  temp_list[[i]] <- tibble(author_names[[i]], institution2[[i]])
+  temp_list[[i]] <- tibble(author_names[[i]], institution2[[i]], doi_nums[i])
 }
+
 
 final_list <- bind_rows(temp_list)
 
 final_list
 
+write_csv(final_list, "final_list.csv")
+
 ```
+
