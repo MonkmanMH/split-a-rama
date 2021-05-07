@@ -200,9 +200,16 @@ for (i in seq_along(institution)) {
 ```
 
 
+## FINAL WORKING VERSION
+
 Add multiple NAs to a list that's too short
 
 ```{r}
+sample_data <- read_csv("sample.csv")
+
+author_names <- str_split(sample_data$AU, ";")
+institution <- str_split(sample_data$INST, ";")
+doi_nums <- sample_data$DOI
 
 institution2 <- vector("list", length(author_names))
 
@@ -216,24 +223,22 @@ for (i in seq_along(institution)) {
     } else {
       institution2[[i]] <- institution[[i]]
   }
-  
+
+  # print lengths of author and institution fields, 
+  # check (last column should be zero)  
   print(c(
   i, 
   length(author_names[[i]]), 
   length(institution[[i]]), 
-  length(institution2[[i]])
+  length(institution2[[i]]),
+  length(author_names[[i]]) -   length(institution2[[i]])
   ))
   
 }
 
-```
+# bind lists into single object
 
-
-bind lists into single object
-
-note that the DOI number gets added back in
-
-```{r}
+# note that the DOI number gets added back in
 
 # define object
 temp_list <- vector("list", length(author_names))
